@@ -55,7 +55,7 @@
                         console.log(res);
                         alert("最終的なOrderを表示:"+JSON.stringify(res));
                     }catch(err){
-                        console.log("処理中に例外が発生しました");
+                        throw err
                     }
                 };
                 process();
