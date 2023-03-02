@@ -1,5 +1,3 @@
-//JSON関連処理
-
 const fs = require('fs');
 
 const getJsonData = (path) => {
