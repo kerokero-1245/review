@@ -1,0 +1,69 @@
+<html>
+    <meta charset="UTF-8">
+    <head>
+        <h1>コーディングテスト</h1>
+    </head>
+    <body>
+        <script>
+            function placeOrder(serviceId,amount) {
+                var tmpId;
+                const orderAsync = async() => {
+                    const orderResponse = await fetch("http://localhost:3000/orders",{
+                        method:"POST",
+                        body:JSON.stringify({
+                            "serviceId":serviceId
+                        },),
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    })
+                    if(orderResponse.status == 400 || orderResponse.status == 500){
+                        throw new Error("OrderAPI実行中に例外が発生しました");
+                    }
+                    return await orderResponse;
+                }
+                
+                const billingAsync = async() => {
+                    const billingResponse = await fetch("http://localhost:3000/billings",{
+                        method:"POST",
+                        body:JSON.stringify({
+                            "orderId":tmpId.id,
+                            "amount":amount
+                        },),
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    })
+                    if(billingResponse.status == 400 || billingResponse.status == 500){
+                        throw new Error("BillingAPI実行中に例外が発生しました");
+                    }
+
+                }
+                
+                const process = async() =>{
+                    try{
+                        const orderResult = await orderAsync();
+                        console.log("order作成完了");
+                    
+                        const res = await orderResult.json()
+                        tmpId = {id:res.id};
+                    
+                        const billingResult = (await billingAsync());
+                        console.log("billing作成完了");
+
+                        res.status = "PROCESSED";
+                        console.log(res);
+                        alert("最終的なOrderを表示:"+JSON.stringify(res));
+                    }catch(err){
+                        throw err
+                    }
+                };
+                process();
+            };
+        </script>
+        <input type="text" value="" id="inputServiceId">
+        <input type="text" value="" id="inputAmount">
+        <button onClick="placeOrder(document.getElementById('inputServiceId').value,document.getElementById('inputAmount').value)">placeOrderを実行</button>
+        </form>
+    </body>
+</html>
